@@ -20,12 +20,14 @@ public class ExpressionTree {
         private Node left, right;
         private boolean atomic;
         private char value;
+        private int size;
         
         public Node (boolean atomic, char value) {
             this.left = null;
             this.right = null;
             this.atomic = atomic;
             this.value = value;
+            this.size = 1;
         }
     }
 
@@ -35,6 +37,26 @@ public class ExpressionTree {
         this.in = in;
         this.root = build ();
     }
+
+    /* Instancia uma ExpressionTree a partir de outra */
+    private ExpressionTree (Node root) {
+        this.root = root;
+    }
+
+    /* Devolve o tamanho da ExpresionTree */
+    public int size () {
+        return root.size;
+    }
+
+    /* Devolve a subarvore da esquerda como uma nova ExpressionTree */
+    public ExpressionTree left () {
+        return new ExpressionTree (root.left);
+    } 
+    
+    /* Devolve a subarvore da direita como uma nova ExpressionTree */
+    public ExpressionTree right () {
+        return new ExpressionTree (root.right);
+    } 
 
     /* Verifica se c é um átomo (letra minúscula). */
     private boolean isAtom (char c) {
@@ -57,7 +79,7 @@ public class ExpressionTree {
         }
         return c;
     }
-    
+
     /* Constroi a ExpressionTree recursivamente */
     private Node build () {
         char c = next ();
@@ -69,6 +91,8 @@ public class ExpressionTree {
         else loc.value = next ();
         loc.right = build ();
         c = next ();
+        if (loc.left != null) loc.size += loc.left.size;
+        if (loc.right != null) loc.size += loc.right.size;
         return loc;
     }
 
@@ -89,6 +113,8 @@ public class ExpressionTree {
     public static void main (String[] args) {
         ExpressionTree t = new ExpressionTree (System.in);
         t.show ();
+        System.out.println (t.size());
+        t.right().show();
     }
 }
 
