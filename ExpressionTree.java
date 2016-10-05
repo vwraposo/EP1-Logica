@@ -58,6 +58,10 @@ public class ExpressionTree {
         return new ExpressionTree (root.right);
     } 
 
+    public char getRoot () {
+        return this.root.value;
+    }
+
     /* Verifica se c é um átomo (letra minúscula). */
     private boolean isAtom (char c) {
         return c >= 'a' && c <= 'z';
