@@ -1,4 +1,5 @@
-import java.io.*;
+import java.util.Scanner;
+import java.io.InputStream;
 
 /* Classe responsável por representar e manipular uma expressão lógica
  * no formato de árvore.
@@ -14,7 +15,7 @@ import java.io.*;
 public class ExpressionTree {
     
     private Node root;
-    private InputStream in;
+    private Scanner in;
     
     private class Node {
         private Node left, right;
@@ -33,7 +34,7 @@ public class ExpressionTree {
 
     /* Devolve uma ExpressionTree lida de in. Todas as formulas, com exceção
      * das atômicas devem ser parentizadas. */
-    public ExpressionTree (InputStream in) {
+    public ExpressionTree (Scanner in) {
         this.in = in;
         this.root = build ();
     }
@@ -76,10 +77,7 @@ public class ExpressionTree {
     private char next () {
         char c = '$';
         while (c != '(' && c != ')' && !isAtom (c) && !isOp (c)) {
-            try {
-                c = (char) in.read ();
-            } catch (IOException e) {
-            }
+                c = (char) in.nextByte ();
         }
         return c;
     }
@@ -115,7 +113,7 @@ public class ExpressionTree {
 
     /* Cliente de testes */
     public static void main (String[] args) {
-        ExpressionTree t = new ExpressionTree (System.in);
+        ExpressionTree t = new ExpressionTree (new Scanner (System.in));
         t.show ();
         System.out.println (t.size());
         t.right().show();
