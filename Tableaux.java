@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Tableaux { 
     private int open;
     private int size;
-    private ArrayList<Formula> branch; 
+    private Formula[] branch; 
     private boolean[] betas;
     private Stack<Triple> stack;
 
@@ -26,7 +26,9 @@ public class Tableaux {
 
         public Triple (Formula formula, boolean[] betas, int size) {
             this.formula = formula;
-            this.betas = betas;
+            this.betas = new boolean[betas.length];
+            for (int i = 0; i < betas.length; i++)
+                this.betas[i] = betas[i];
             this.size = size;
         }
     }
@@ -34,12 +36,14 @@ public class Tableaux {
     public Tableaux (String[] A, String[] B) {
         int count = 0;
         this.open = 1;
-        this.size = 0;
-        this.branch = new ArrayList<Formula> ();
-        for (String f : A) this.branch.add (new Formula (true, new ExpressionTree (f))); 
-        for (String f : B) this.branch.add (new Formula (false, new ExpressionTree (f))); 
-        for (Formula f : this.branch) count += f.tree.getSize ();
+        ArrayList<Formula> tmp = new ArrayList<Formula> ();
+        for (String f : A) tmp.add (new Formula (true, new ExpressionTree (f))); 
+        for (String f : B) tmp.add (new Formula (false, new ExpressionTree (f))); 
+        for (Formula f : tmp) count += f.tree.getSize ();
         this.betas = new boolean[count];
+        this.branch = new Formula[count];
+        this.size = tmp.size ();
+        for (int i = 0; i < size; i++) branch[i] = tmp.get (i); 
         stack = new Stack<Triple> (); 
     }
 
@@ -47,7 +51,8 @@ public class Tableaux {
         boolean value[] = new boolean[26];
         boolean set[] = new boolean[26];
         for (int i = 0; i < 26; i++) set[i] = false;
-        for (Formula f : branch) {
+        for (int i = 0; i < size; i++) {
+            Formula f = branch[i];
             if (f.tree.isAtomic ()) {
                 int k = f.tree.getRoot () - 'a';
                 if (set[k]) if (value[k] != f.value) return true;
@@ -58,12 +63,10 @@ public class Tableaux {
         return false;
     }
 
-    private boolean applyAlpha () {
-        boolean hasAlpha = false;
+    private boolean applyAlpha (int start) {
         boolean saturated = false;
-        for (int i = 0; i < branch.size (); i++) {
-            System.out.println ("Cagou aqui certeza " + i);
-            Formula f = branch.get (i);
+        for (int i = start; i < size; i++) {
+            Formula f = branch[i];
             char c = f.tree.getRoot ();
             boolean b = f.value, bL, bR, found;
             found = bL = bR = false;
@@ -95,20 +98,19 @@ public class Tableaux {
             
             if (found) { 
                 /* Adiciona ao ramo */ 
-                if (c != 'N') branch.add (new Formula (bL, f.tree.left ()));
-                branch.add (new Formula (bR, f.tree.right ()));
+                if (c != 'N') branch[size++] = new Formula (bL, f.tree.left ());
+                branch[size++] = new Formula (bR, f.tree.right ());
             }
             else if (!found && !f.tree.isAtomic ())
                 betas[i] = true;
-            hasAlpha |= found;
         }
-
-        return hasAlpha;
+        for (int i = 0; i < size; i++) if (betas[i]) return true;
+        return false;
     }
 
-    private boolean applyBeta () {
-        for (int i = 0; i < branch.size (); i++) {
-            Formula f = branch.get (i);
+    private void applyBeta () {
+        for (int i = 0; i < size; i++) {
+            Formula f = branch[i];
             if (betas[i]) {
                 char c = f.tree.getRoot ();
                 boolean b = f.value;
@@ -129,14 +131,26 @@ public class Tableaux {
                     bR = true;
                 }
 
-                stack.push (new Triple (new Formula (bR, f.tree.right ()), betas, size));
                 betas[i] = false;
+                stack.push (new Triple (new Formula (bR, f.tree.right ()), betas, size));
                 open++;
-                branch.add (new Formula (bL, f.tree.left ()));
-                return true;
+                branch[size++] = new Formula (bL, f.tree.left ());
+                return;
             }
         }
-        return false;
+    }
+
+    private void contraExample () {
+        boolean[] seen = new boolean[26];
+        for (int i = 0; i < 26; i++) seen[i] = false;
+        for (int i = 0; i < size; i++) {
+            Formula f = branch[i];
+            char c = f.tree.getRoot ();
+            if (f.tree.isAtomic () && !seen[c - 'a']) {
+                System.out.println (c + " = " + f.value);
+                seen[c - 'a'] = true;
+            }
+        }
     }
     /*while apply_alpha -> apply beta 
       dai verifica se e valida se nao for valida e staurado
@@ -146,31 +160,32 @@ public class Tableaux {
     como vamos mandar o ep se o paca nao funciona, ver com a galera
     fazer ponteiro do has beta ser statico */
     public void solve () {
-        boolean valid, hasAlpha, hasBeta;
+        boolean valid, hasBeta;
+        int start = 0;
         valid = true;
-        while (this.open > 0) {
-            // Aplica todos os alphas e marca os betas
-            hasAlpha = applyAlpha ();
-            // Aplica um beta e empilha o estado open++;
-            hasBeta = applyBeta ();
+        while (open > 0) {
+            hasBeta = applyAlpha (start);
             
-            if (!hasAlpha && !hasBeta) { 
-                //imprime e break
+            // Ramo fechado
+            if (hasContradiction ()) {
+                if (!stack.isEmpty ()) {
+                    Triple last = stack.pop ();
+                    size = last.size;
+                    betas = last.betas;
+                    branch[size++] = last.formula;
+                }
+                open--;
+                if (open == 0) break;
+            }
+            // Ramo saturado
+            else if (!hasBeta) { 
                 valid = false;
                 System.out.println ("O sequente não é válido. Contra-exemplo:");
-                for (Formula f : branch)
-                    if (f.tree.isAtomic ())
-                        System.out.println (f.tree.getRoot () + " = " + f.value);
+                contraExample ();
                 break;
             }
-            if (hasContradiction ()) {
-                // Desempilha o estado open--;
-                Triple last = stack.pop ();
-                this.size = last.size;
-                this.betas = last.betas;
-                this.branch.add (last.formula);
-                open--;
-            }
+            else applyBeta ();
+            start = size - 1;
         }
         if (valid) 
             System.out.println ("O sequente é válido!");

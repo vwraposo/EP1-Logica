@@ -17,14 +17,12 @@ public class ExpressionTree {
     
     private class Node {
         private Node left, right;
-        private boolean atomic;
         private char value;
         private int size;
         
-        public Node (boolean atomic, char value) {
+        public Node (char value) {
             this.left = null;
             this.right = null;
-            this.atomic = atomic;
             this.value = value;
             this.size = 1;
         }
@@ -49,7 +47,7 @@ public class ExpressionTree {
     }
 
     public boolean isAtomic () {
-        return this.root.atomic;
+        return this.getSize () == 1;
     }
 
     /* Devolve a subarvore da esquerda como uma nova ExpressionTree */
@@ -87,9 +85,9 @@ public class ExpressionTree {
     /* Constroi a ExpressionTree recursivamente */
     private Node build () {
         char c = next ();
-        if (isAtom (c)) return new Node (true, c);
+        if (isAtom (c)) return new Node (c);
         if (c == 'N') return null;
-        Node loc = new Node (false, '$');
+        Node loc = new Node ('$');
         loc.left = build ();
         if (loc.left == null) loc.value = 'N';
         else loc.value = next ();
@@ -101,7 +99,7 @@ public class ExpressionTree {
     }
 
     /* Imprime a árvore em e-r-d */
-    private void show () {
+    public void show () {
         showR (this.root);
     }
 
