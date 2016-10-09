@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.io.InputStream;
 
 /* Classe responsável por representar e manipular uma expressão lógica
  * no formato de árvore.
@@ -11,11 +10,10 @@ import java.io.InputStream;
  *     (F1 .I. F2) (IMPLICAÇÃO)
  *     (.N. F1) (NEGAÇÃO) 
  * onde F1 e F2 são fórmulas bem formadas. */
-
 public class ExpressionTree {
-    
     private Node root;
-    private Scanner in;
+    private String input;
+    private int count;
     
     private class Node {
         private Node left, right;
@@ -32,11 +30,12 @@ public class ExpressionTree {
         }
     }
 
-    /* Devolve uma ExpressionTree lida de in. Todas as formulas, com exceção
+    /* Devolve a ExpressionTree de input. Todas as formulas, com exceção
      * das atômicas devem ser parentizadas. */
-    public ExpressionTree (Scanner in) {
-        this.in = in;
+    public ExpressionTree (String input) {
+        this.input = input;
         this.root = build ();
+        this.count = 0;
     }
 
     /* Instancia uma ExpressionTree a partir de outra */
@@ -45,8 +44,12 @@ public class ExpressionTree {
     }
 
     /* Devolve o tamanho da ExpresionTree */
-    public int size () {
+    public int getSize () {
         return root.size;
+    }
+
+    public boolean isAtomic () {
+        return this.root.atomic;
     }
 
     /* Devolve a subarvore da esquerda como uma nova ExpressionTree */
@@ -73,12 +76,11 @@ public class ExpressionTree {
         return c == 'A' || c == 'I' || c == 'O' || c == 'N';
     }
 
-    /* Devolve o próximo caractere relevante de in */
+    /* Devolve o próximo caractere relevante de input */
     private char next () {
-        char c = '$';
-        while (c != '(' && c != ')' && !isAtom (c) && !isOp (c)) {
-                c = (char) in.nextByte ();
-        }
+        char c = input.charAt (count++);
+        while (c != '(' && c != ')' && !isAtom (c) && !isOp (c))
+            c = input.charAt (count++);
         return c;
     }
 
@@ -113,10 +115,11 @@ public class ExpressionTree {
 
     /* Cliente de testes */
     public static void main (String[] args) {
-        ExpressionTree t = new ExpressionTree (new Scanner (System.in));
+        Scanner scanner = new Scanner (System.in);
+        ExpressionTree t = new ExpressionTree (scanner.next ());
         t.show ();
-        System.out.println (t.size());
-        t.right().show();
+        System.out.println (t.getSize ());
+        t.right ().show ();
     }
 }
 
