@@ -3,12 +3,12 @@ import java.util.Scanner;
 /** Classe responsável por representar e manipular uma expressão lógica
  * no formato de árvore.
  * Todas as fórmulas, com exceção das atômicas, devem ser parentizadas e bem formadas.
- * Átomos são definidos por letras minúsculas.
- * Operações são as seguintes:
- *     (F1 .O. F2) (DISJUNÇÃO)
- *     (F1 .A. F2) (CONJUNÇÃO)
- *     (F1 .I. F2) (IMPLICAÇÃO)
- *     (.N. F1) (NEGAÇÃO) 
+ * Átomos são definidos por letras minúsculas.<br>
+ * Operações são as seguintes:<br>
+ *     (F1 .O. F2) (DISJUNÇÃO)<br>
+ *     (F1 .A. F2) (CONJUNÇÃO)<br>
+ *     (F1 .I. F2) (IMPLICAÇÃO)<br>
+ *     (.N. F1) (NEGAÇÃO) <br>
  * onde F1 e F2 são fórmulas bem formadas.
  *
  * @author Gabriel Russo
@@ -36,7 +36,7 @@ public class ExpressionTree {
 
     /**
      * Inicializa uma nova ExpressionTree a partir da string input.
-     * @params input fórmula bem formada e parentizada
+     * @param input fórmula bem formada e parentizada
      */
     public ExpressionTree (String input) {
         this.input = input;
