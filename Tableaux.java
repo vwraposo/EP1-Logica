@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * temos um sequente válido.
  *
  * @author Gabriel Russo
- * @autor Matheus Oliveira
+ * @author Matheus Oliveira
  * @author Victor Colombo
  * @author Victor Raposo
  */
@@ -254,7 +254,7 @@ public class Tableaux {
 
         System.out.print ("Insira o tamanho do conjunto de premissas: ");    
         n = Integer.parseInt (in.nextLine ());
-        System.out.println ("Insira cada premissa, devidamente formatada");
+        if (n > 0) System.out.println ("Insira cada premissa, devidamente formatada");
         A = new String[n];
         for (int i = 0; i < n; i++) A[i] = in.nextLine ();
 
