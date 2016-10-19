@@ -1,13 +1,35 @@
 ### MAC0239 EP1 - Tableaux Semânticos
 
-Gabriel Russo
+Gabriel de Russo e Carmo - 9298041
 
-Matheus Oliveira
+Matheus de Mello Santos Oliveira - 8642821
 
-Victor Colombo
+Victor de Oliveira Colombo - 8988657
 
-Victor Raposo
+Victor Wichmann Raposo - 9298020
 
+----
+#### Uso
+
+A comunicação entre nosso programa e o usuário se dá por meio da entrada e saída padrão.
+* **Dependências**:   
+JDK-8
+
+* **Compilando e Executando**:  
+```
+javac Tableaux.java
+java Tableaux
+```
+* **Input**:  
+    Na primeira linha recebe o número de premissas _**N**_.   
+
+    As _**N**_ linhas seguintes descrevem cada premissa:
+    todas as subfórmulas devem ser parentizadas, com exceção das atômicas, e bem formadas. O formato das fórmulas pode ser encontrado no enunciado.
+
+    A última linha recebe a única consequência lógica seguindo as mesmas restrições.  
+
+* **Output**:  
+    Se o sequente e válido ou um contra-exemplo.
 ----
 
 #### Organização
@@ -21,8 +43,6 @@ O projeto conta com duas classes:
     * **Triple**: Como o Java não contém suporte nativo a n-uplas, foi necessário a implementação de uma estrutura para armazenar triplas.
     * **Formula**: Associa um valor a uma ExpressionTree (true ou false).
 
-A primeira dificuldade na implementação foi o conhecimento da linguagem. Como nenhum de nós tinha utilizado Java anteriormente, precisamos dedicar tempo para aprender a linguagem, sua API e suas boas práticas.
-
 ----
 
 #### Expressões
@@ -34,7 +54,7 @@ Cada expressão na forma *A X B*, sendo *A* e *B* subexpressões e *X* um operad
 
 O processo tem fim quando se chega a um átomo.
 
-Nessa etapa surgiu a dificuldade do tratamento do operador *not* pois ele é **unário**, ou seja, é aplicado sobre apenas um operando. Foi necessário tratar separadamente este caso.
+Nessa etapa surgiu a dificuldade do tratamento do operador *not* pois ele é **unário**, ou seja, é aplicado sobre apenas um operando. Foi necessário tratar separadamente este caso: o nó correspondente contém apenas o filho direito.
 
 ---
 
@@ -43,13 +63,12 @@ Nessa etapa surgiu a dificuldade do tratamento do operador *not* pois ele é **u
 Esta etapa foi implementado o algoritmo Tableaux Semântico para resolução, que consiste superficialmente em:
 
 1. Enquanto existem ramos abertos não saturados aplique expansões alfas e betas.
-2. Após todos os ramos estarem saturados cheque por ramos abertos, se existem o contra exemplo é a valoração de seus átomos, caso contrário o teorema é verdadeiro.
+2. Após todos os ramos estarem saturados cheque por ramos abertos. Se existe algum o sequente é inválido e a valoração deste é um contra-exemplo. Caso contrário o teorema é válido.
 
 Embora o algoritmo teórico seja simples, ele possui uma série de detalhes de implementação omitidos.
 
-O grande impasse desta etapa foi encontrar o contraexemplo, uma vez que isso nos forçava a aplicar as expansões de forma que fosse fácil reconstruir o caminho percorrido e consequentemente a valoração dos átomos.
-
-Seguimos a estratégia de Busca em Profundidade juntamente com uma Pilha de Ramos, conforme sugerido no Capítulo 4 do livro *Lógica Matemática para Cientistas de Computaçãao, Flávio Soares Corrêa da Silva & Marcelo Finger & Ana Cristina Vieira de Melo*.
+Um grande impasse foi encontrar o meio de representar o tableaux. Optamos por não representar a árvore explicitamente, guardando apenas o ramo atual,
+seguindo a estratégia de Busca em Profundidade juntamente com uma Pilha de Ramos, conforme sugerido no Capítulo 4 do livro *Lógica Matemática para Cientistas de Computaçãao, Flávio Soares Corrêa da Silva & Marcelo Finger & Ana Cristina Vieira de Melo*.
 
 Para melhoria de performance utilizamos algumas otimizações:
 
@@ -58,7 +77,6 @@ Para melhoria de performance utilizamos algumas otimizações:
 * Aplicar expansões betas nos menores ramos possíveis.
 
 ---
-
 #### Conclusão
 
 O projeto foi de grande aprendizado para a equipe, uma vez que ele nos ensinou uma visão diferente da que estávamos acostumados em matérias anteriores, onde heurísticas e decisões de projetos foram essenciais para a uma boa execução.
