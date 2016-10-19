@@ -30,6 +30,7 @@ java Tableaux
 
 * **Output**:  
     Se o sequente e válido ou um contra-exemplo.
+
 ----
 
 #### Organização
@@ -43,6 +44,7 @@ O projeto conta com duas classes:
     * **Triple**: Como o Java não contém suporte nativo a n-uplas, foi necessário a implementação de uma estrutura para armazenar triplas.
     * **Formula**: Associa um valor a uma ExpressionTree (true ou false).
 
+- [Javadoc](https://linux.ime.usp.br/~gabrielrc/mac0239-javadoc/)
 ----
 
 #### Expressões
